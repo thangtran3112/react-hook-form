@@ -1,17 +1,31 @@
 import { Controller, Mode, SubmitHandler, useForm } from "react-hook-form";
-import { SimpleUserType, schema } from "../schema/schema";
+import { SimpleUserType, defaultValues, schema } from "../schema/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Autocomplete,
   Box,
+  Button,
   Checkbox,
   Container,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormHelperText,
+  FormLabel,
+  Radio,
+  RadioGroup,
   Stack,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import { Option } from "../../types/option";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import useZustandForm from "../../stores/formStore";
+import { DevTool } from "@hookform/devtools";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 
 const initialMode: Mode = "all";
 const stateOptions: Option[] = [
@@ -37,17 +51,47 @@ const stateOptions: Option[] = [
   { id: "20", label: "Maryland" },
 ];
 
+const languagesOptions: Option[] = [
+  { id: "1", label: "English" },
+  { id: "2", label: "Spanish" },
+  { id: "3", label: "Mandarin" },
+  { id: "4", label: "Hindi" },
+  { id: "5", label: "Arabic" },
+];
+
+const genderOptions: Option[] = [
+  { id: "1", label: "Male" },
+  { id: "2", label: "Female" },
+  { id: "3", label: "Unknown" },
+];
+
+const skillsOptions: Option[] = [
+  { id: "1", label: "CS2" },
+  { id: "2", label: "Doom" },
+  { id: "3", label: "LOL" },
+  { id: "4", label: "Fifa" },
+  { id: "5", label: "Mario" },
+  { id: "6", label: "Sonic" },
+  { id: "7", label: "Megaman" },
+];
+
 const SimpleUser = () => {
+  const { mode } = useZustandForm();
   const {
     register,
     formState: { errors },
     handleSubmit,
     control,
+    reset,
   } = useForm<SimpleUserType>({
-    mode: initialMode,
-    // defaultValues: defaultValues,
+    mode: mode ?? initialMode,
+    defaultValues,
     resolver: zodResolver(schema),
   });
+
+  const handleReset = () => {
+    reset(defaultValues);
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onSubmit: SubmitHandler<SimpleUserType> = (data) => {};
@@ -67,6 +111,7 @@ const SimpleUser = () => {
           error={!!errors.email}
           helperText={errors.email?.message}
         />
+        {/* States Autocomplete with mutliple badges */}
         <Controller
           name="states"
           control={control}
@@ -114,7 +159,124 @@ const SimpleUser = () => {
             />
           )}
         />
+        {/* Toggle Button Group of Language Spoken */}
+        <Controller
+          control={control}
+          name="languagesSpoken"
+          render={({
+            field: { onChange, value, ...restField },
+            fieldState: { error },
+          }) => (
+            <FormControl error={!!error}>
+              <FormLabel>Languages Spoken</FormLabel>
+              <ToggleButtonGroup
+                onChange={(_, newValue) => {
+                  if (newValue.length) {
+                    onChange(newValue);
+                  }
+                }}
+                value={value.length ? value : [languagesOptions?.[0].id]}
+                {...restField}
+              >
+                {languagesOptions?.map((option) => (
+                  <ToggleButton value={option.id} key={option.id}>
+                    {option.label}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+              <FormHelperText>{error?.message}</FormHelperText>
+            </FormControl>
+          )}
+        />
+
+        {/* GENDER SECTION */}
+        <Controller
+          control={control}
+          name="gender"
+          render={({ field, fieldState: { error } }) => (
+            <FormControl {...field} error={!!error}>
+              <FormLabel>Gender</FormLabel>
+              <RadioGroup>
+                {genderOptions?.map((option) => (
+                  <FormControlLabel
+                    value={option.id}
+                    control={<Radio checked={field.value === option.id} />}
+                    label={option.label}
+                    key={option.id}
+                  />
+                ))}
+              </RadioGroup>
+              <FormHelperText>{error?.message}</FormHelperText>
+            </FormControl>
+          )}
+        />
+
+        {/* Multiple checkbox for SKILLS */}
+
+        <Controller
+          control={control}
+          name="skills"
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <FormControl error={!!error}>
+              <FormLabel>Skills</FormLabel>
+              <FormGroup>
+                {skillsOptions?.map((option) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={value.includes(option.id)}
+                        onChange={() => {
+                          if (value.includes(option.id)) {
+                            onChange(
+                              (value as string[]).filter(
+                                (item) => item !== option.id
+                              )
+                            );
+                          } else {
+                            onChange([...value, option.id]);
+                          }
+                        }}
+                        key={option.id}
+                      />
+                    }
+                    label={option.label}
+                    key={option.id}
+                  />
+                ))}
+              </FormGroup>
+              <FormHelperText>{error?.message}</FormHelperText>
+            </FormControl>
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="registrationDateAndTime"
+          render={({ field, fieldState: { error } }) => (
+            <FormControl error={!!error}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DateTimePicker label="Registration Date" {...field} />
+              </LocalizationProvider>
+              <FormHelperText>{error?.message}</FormHelperText>
+            </FormControl>
+          )}
+        />
+
+        {/* SUBMIT BUTTON */}
+        <Stack
+          sx={{
+            marginTop: 5,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button variant="contained" type="submit">
+            Submit
+          </Button>
+          <Button onClick={handleReset}>Reset</Button>
+        </Stack>
       </Stack>
+      <DevTool control={control} />
     </Container>
   );
 };

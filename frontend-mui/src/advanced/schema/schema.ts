@@ -14,11 +14,19 @@ export const schema = z
 				.refine((text) => RegexPatterns.email.test(text), {
 					message: 'Email not valid',
 				}),
-			states: z.array(z.string()).min(1).max(2),
-			languagesSpoken: z.array(z.string()),
-			gender: z.string().min(1),
-			skills: z.array(z.string()).max(2),
-			registrationDateAndTime: z.date(),
+			states: z.array(z.string()).min(1, { message: 'Must select at least 1 state' }).max(2, { message: 'At most 2 states' }),
+			languagesSpoken: z.array(z.string()).min(1, {
+				message: 'You must select at least 1 language'
+			}).max(2, {
+				message: 'You can select up to 2 languages'
+			}),
+			gender: z.string().min(1, { message: 'Must select a gender' }),
+			skills: z.array(z.string()).max(2, {
+				message: 'You can select up to 2 skills'
+			}),
+			registrationDateAndTime: z.date().refine(date => date <= new Date(), {
+				message: 'Registration date must be in the past or present'
+			}),
 			formerEmploymentPeriod: z.array(z.date()).min(2).max(2),
 			salaryRange: z.array(z.number()).max(2),
 		}),
@@ -43,9 +51,9 @@ export const schema = z
 		])
 	);
 
-export type Schema = z.infer<typeof schema>;
+export type ZAdvancedUser = z.infer<typeof schema>;
 
-export const defaultValues: Schema = {
+export const defaultValues: ZAdvancedUser = {
 	variant: 'create',
 	email: '',
 	name: '',

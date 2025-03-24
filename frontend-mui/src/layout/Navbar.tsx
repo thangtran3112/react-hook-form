@@ -50,7 +50,8 @@ export default function ButtonAppBar() {
               setMode(mode);
             }}
             sx={{
-              color: "orange",
+              color: "red",
+              fontWeight: "bold",
               "& .MuiSelect-select": {
                 backgroundColor: "blue",
               },

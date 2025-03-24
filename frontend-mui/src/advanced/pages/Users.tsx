@@ -27,7 +27,7 @@ import {
   useUser,
   useUsers,
 } from "../services/queries";
-import { defaultValues, Schema } from "../schema/schema";
+import { defaultValues, ZAdvancedUser } from "../schema/schema";
 import { RHFAutocomplete } from "../components/RHFAutocomplete";
 import { RHFCheckbox } from "../components/RHFCheckbox";
 import { RHFDateRangePicker } from "../components/RHFDateRangePicker";
@@ -46,7 +46,7 @@ export function Users() {
   const usersQuery = useUsers();
 
   const { watch, control, unregister, reset, setValue, handleSubmit } =
-    useFormContext<Schema>();
+    useFormContext<ZAdvancedUser>();
 
   const id = useWatch({ control, name: "id" });
   const variant = useWatch({ control, name: "variant" });
@@ -92,7 +92,7 @@ export function Users() {
   const createUserMutation = useCreateUser();
   const editUserMutation = useEditUser();
 
-  const onSubmit: SubmitHandler<Schema> = (data) => {
+  const onSubmit: SubmitHandler<ZAdvancedUser> = (data) => {
     if (variant === "create") {
       createUserMutation.mutate(data);
     } else {
@@ -116,36 +116,40 @@ export function Users() {
         </List>
 
         <Stack sx={{ gap: 2 }}>
-          <RHFTextField<Schema> name="name" label="Name" />
-          <RHFTextField<Schema> name="email" label="Email" />
-          <RHFAutocomplete<Schema>
+          <RHFTextField<ZAdvancedUser> name="name" label="Name" />
+          <RHFTextField<ZAdvancedUser> name="email" label="Email" />
+          <RHFAutocomplete<ZAdvancedUser>
             name="states"
             label="States"
             options={statesQuery.data}
           />
-          <RHFToggleButtonGroup<Schema>
+          <RHFToggleButtonGroup<ZAdvancedUser>
             name="languagesSpoken"
             options={languagesQuery.data}
+            label="Languages Spoken"
           />
-          <RHFRadioGroup<Schema>
+          <RHFRadioGroup<ZAdvancedUser>
             name="gender"
             options={gendersQuery.data}
             label="Gender"
           />
-          <RHFCheckbox<Schema>
+          <RHFCheckbox<ZAdvancedUser>
             name="skills"
             options={skillsQuery.data}
             label="Skills"
           />
 
-          <RHFDateTimePicker<Schema>
+          <RHFDateTimePicker<ZAdvancedUser>
             name="registrationDateAndTime"
             label="Registration Date & Time"
           />
           <Typography>Former Employment Period:</Typography>
-          <RHFDateRangePicker<Schema> name="formerEmploymentPeriod" />
-          <RHFSlider<Schema> name="salaryRange" label="Salary Range" />
-          <RHFSwitch<Schema> name="isTeacher" label="Are you a teacher?" />
+          <RHFDateRangePicker<ZAdvancedUser> name="formerEmploymentPeriod" />
+          <RHFSlider<ZAdvancedUser> name="salaryRange" label="Salary Range" />
+          <RHFSwitch<ZAdvancedUser>
+            name="isTeacher"
+            label="Are you a teacher?"
+          />
 
           {isTeacher && (
             <Button onClick={() => append({ name: "" })} type="button">
@@ -155,7 +159,7 @@ export function Users() {
 
           {fields.map((field, index) => (
             <Fragment key={field.id}>
-              <RHFTextField<Schema>
+              <RHFTextField<ZAdvancedUser>
                 name={`students.${index}.name`}
                 label="Name"
               />
@@ -173,7 +177,7 @@ export function Users() {
 
           <Stack sx={{ flexDirection: "row", justifyContent: "space-between" }}>
             <Button variant="contained" type="submit">
-              {variant === "create" ? "New user" : "Edit user"}
+              {variant === "create" ? "Submit" : "Save"}
             </Button>
             <Button onClick={handleReset}>Reset</Button>
           </Stack>
