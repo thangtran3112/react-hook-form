@@ -5,10 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { defaultValues, Schema, schema } from "../schema/schema";
 import { Users } from "./Users";
+import useZustandForm from "../../stores/formStore";
 
 export function UsersProvider() {
+  const { mode } = useZustandForm();
   const methods = useForm<Schema>({
-    mode: "all",
+    mode: mode,
     resolver: zodResolver(schema),
     defaultValues,
   });

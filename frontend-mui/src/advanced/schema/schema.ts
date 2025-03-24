@@ -7,7 +7,7 @@ export const RegexPatterns = {
 export const schema = z
 	.intersection(
 		z.object({
-			name: z.string().min(1, { message: 'Required' }),
+			name: z.string().min(5, { message: 'Name must be at least 5 characters' }),
 			email: z
 				.string()
 				.min(1, { message: 'Email is required' })

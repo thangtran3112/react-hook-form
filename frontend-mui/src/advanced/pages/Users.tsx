@@ -18,15 +18,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import { RHFAutocomplete } from "../../components/RHFAutocomplete";
-import { RHFCheckbox } from "../../components/RHFCheckbox";
-import { RHFDateRangePicker } from "../../components/RHFDateRangePicker";
-import { RHFDateTimePicker } from "../../components/RHFDateTimePicker";
-import { RHFRadioGroup } from "../../components/RHFRadioGroup";
-import { RHFSlider } from "../../components/RHFSlider";
-import { RHFSwitch } from "../../components/RHFSwitch";
-import { RHFTextField } from "../../components/RHFTextField";
-import { RHFToggleButtonGroup } from "../../components/RHFToggleButtonGroup";
 import { useCreateUser, useEditUser } from "../services/mutations";
 import {
   useGenders,
@@ -37,6 +28,15 @@ import {
   useUsers,
 } from "../services/queries";
 import { defaultValues, Schema } from "../schema/schema";
+import { RHFAutocomplete } from "../components/RHFAutocomplete";
+import { RHFCheckbox } from "../components/RHFCheckbox";
+import { RHFDateRangePicker } from "../components/RHFDateRangePicker";
+import { RHFDateTimePicker } from "../components/RHFDateTimePicker";
+import { RHFRadioGroup } from "../components/RHFRadioGroup";
+import { RHFSlider } from "../components/RHFSlider";
+import { RHFSwitch } from "../components/RHFSwitch";
+import { RHFTextField } from "../components/RHFTextField";
+import { RHFToggleButtonGroup } from "../components/RHFToggleButtonGroup";
 
 export function Users() {
   const statesQuery = useStates();

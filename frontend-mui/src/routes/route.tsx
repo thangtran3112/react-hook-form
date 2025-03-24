@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router";
-import SimpleUser from "../simple/components/SimpleUser";
-import { UsersProvider } from "../advanced/components/UsersProvider";
+import SimpleUser from "../simple/pages/SimpleUser";
+import { UsersProvider } from "../advanced/pages/UsersProvider";
 import Layout from "../layout/Layout";
 import NotFound from "../layout/NotFound";
 
