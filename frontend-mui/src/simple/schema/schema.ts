@@ -4,7 +4,7 @@ export const RegexPatterns = {
 	email: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
 };
 
-export const schema = z
+export const simpleUserSchema = z
 	.intersection(
 		z.object({
 			name: z.string().min(5, { message: 'Name must be at least 5 characters' }),
@@ -14,6 +14,10 @@ export const schema = z
 				.refine((text) => RegexPatterns.email.test(text), {
 					message: 'Email not valid',
 				}),
+			age: z
+				.number()
+				.min(18, { message: 'Age must be at least 18' })
+				.max(99, { message: 'Age must be less than 100' }),
 			states: z.array(z.string()).min(1, { message: 'Must select at least 1 state' }).max(2, { message: 'At most 2 states' }),
 			languagesSpoken: z.array(z.string()).min(1, {
 				message: 'You must select at least 1 language'
@@ -21,9 +25,7 @@ export const schema = z
 				message: 'You can select up to 2 languages'
 			}),
 			gender: z.string().min(1, { message: 'Must select a gender' }),
-			skills: z.array(z.string()).max(3, {
-				message: 'You can select up to 3 skills'
-			}).min(1, {
+			skills: z.array(z.string()).min(1, {
 				message: 'You must select at least 1 skill'
 			}),
 			registrationDateAndTime: z.date().refine(date => date <= new Date(), {
@@ -38,25 +40,37 @@ export const schema = z
 			z.object({ variant: z.literal('edit'), id: z.string().min(1) }),
 		])
 	)
-	.and(
-		z.union([
-			z.object({ isTeacher: z.literal(false) }),
-			z.object({
-				isTeacher: z.literal(true),
-
-				students: z.array(
-					z.object({
-						name: z.string().min(4),
-					})
-				),
-			}),
-		])
+	.refine(
+		(data) => !(data.age > 40) || data.skills.length >= 4,
+		{
+			message: "Users over 40 must select >= 4 skills",
+			path: ["skills"]
+		}
+	)
+	.refine(
+		(data) => !(data.age > 30 && data.age <= 40) || data.skills.length >= 3,
+		{
+			message: "Users over 30 must select >= 3 skills",
+			path: ["skills"]
+		}
+	)
+	.refine(
+		(data) => {
+			const eighteenYearsAgo = new Date(data.registrationDateAndTime);
+			eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - data.age);
+			return eighteenYearsAgo.getFullYear() <= new Date().getFullYear() - 18;
+		},
+		{
+			message: "Registration date cannot be before user reaching 18 years old",
+			path: ["registrationDateAndTime"]
+		}
 	);
-export type SimpleUserType = z.infer<typeof schema>;
+export type ZSimpleUserType = z.infer<typeof simpleUserSchema>;
 
-export const defaultValues: SimpleUserType = {
+export const defaultValues: ZSimpleUserType = {
 	variant: 'create',
 	email: '',
+	age: 18,
 	name: '',
 	states: [],
 	languagesSpoken: [],
@@ -65,5 +79,4 @@ export const defaultValues: SimpleUserType = {
 	registrationDateAndTime: new Date(),
 	formerEmploymentPeriod: [new Date(), new Date()],
 	salaryRange: [0, 2000],
-	isTeacher: false,
 };

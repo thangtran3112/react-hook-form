@@ -1,5 +1,9 @@
 import { Controller, Mode, SubmitHandler, useForm } from "react-hook-form";
-import { SimpleUserType, defaultValues, schema } from "../schema/schema";
+import {
+  ZSimpleUserType,
+  defaultValues,
+  simpleUserSchema,
+} from "../schema/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Autocomplete,
@@ -18,6 +22,7 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
 import { Option } from "../../types/option";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -83,10 +88,10 @@ const SimpleUser = () => {
     handleSubmit,
     control,
     reset,
-  } = useForm<SimpleUserType>({
+  } = useForm<ZSimpleUserType>({
     mode: mode ?? initialMode,
     defaultValues,
-    resolver: zodResolver(schema),
+    resolver: zodResolver(simpleUserSchema),
   });
 
   const handleReset = () => {
@@ -94,7 +99,7 @@ const SimpleUser = () => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onSubmit: SubmitHandler<SimpleUserType> = (data) => {};
+  const onSubmit: SubmitHandler<ZSimpleUserType> = (data) => {};
 
   return (
     <Container maxWidth="sm" component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -111,6 +116,26 @@ const SimpleUser = () => {
           error={!!errors.email}
           helperText={errors.email?.message}
         />
+        {/* CONVERT STRING FROM INPUT TO NUMBER TYPE */}
+        <Controller
+          name="age"
+          control={control}
+          render={({
+            field: { value, onChange, ref },
+            fieldState: { error },
+          }) => (
+            <TextField
+              label="Age"
+              type="number"
+              value={value ?? ""}
+              onChange={(e) => onChange(Number(e.target.value))}
+              inputRef={ref}
+              error={!!error}
+              helperText={error?.message}
+            />
+          )}
+        />
+
         {/* States Autocomplete with mutliple badges */}
         <Controller
           name="states"
@@ -121,6 +146,8 @@ const SimpleUser = () => {
           }) => (
             <Autocomplete
               options={stateOptions}
+              // convert form value to component value
+              // (value is an array of ids, we need to find the corresponding objects)
               value={(value || []).map((id: string) =>
                 stateOptions?.find((item) => item.id === id)
               )}
@@ -131,6 +158,8 @@ const SimpleUser = () => {
               isOptionEqualToValue={(option, newValue) =>
                 option?.id === newValue?.id
               }
+              // component value to form value
+              // (newValue is an array of objects, we need to extract the ids)
               onChange={(_, newValue) => {
                 onChange(newValue.map((item) => item?.id));
               }}
@@ -213,6 +242,11 @@ const SimpleUser = () => {
 
         {/* Multiple checkbox for SKILLS */}
 
+        {/* Datetime validation */}
+        <Typography variant="body2" color="text.secondary">
+          Based on declared Age, users must select a corresponding number of
+          skills
+        </Typography>
         <Controller
           control={control}
           name="skills"
@@ -224,7 +258,9 @@ const SimpleUser = () => {
                   <FormControlLabel
                     control={
                       <Checkbox
+                        // form to component
                         checked={value.includes(option.id)}
+                        // component to form
                         onChange={() => {
                           if (value.includes(option.id)) {
                             onChange(
@@ -248,7 +284,10 @@ const SimpleUser = () => {
             </FormControl>
           )}
         />
-
+        <Typography variant="body2" color="text.secondary">
+          Based on declared Age, registration date cannot be before user
+          reaching 18 years old
+        </Typography>
         <Controller
           control={control}
           name="registrationDateAndTime"
