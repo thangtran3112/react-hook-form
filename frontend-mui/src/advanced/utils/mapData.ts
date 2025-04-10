@@ -1,7 +1,7 @@
 import { ApiCommon, ApiCreateEdit } from '../types/apiTypes';
-import { Schema } from '../schema/schema';
+import { ZAdvancedUser } from '../schema/schema';
 
-export function mapData(data: Schema): ApiCreateEdit {
+export function mapData(data: ZAdvancedUser): ApiCreateEdit {
 	const common: ApiCommon = {
 		email: data.email,
 		formerEmploymentPeriod: [

@@ -175,6 +175,7 @@ const SimpleUser = () => {
                   label="States"
                 />
               )}
+              renderTags={() => []} // Hide the selected options tags in input
               renderOption={({ key, ...otherProps }, option, { selected }) => (
                 <Box key={key} component="li" {...otherProps}>
                   <Checkbox

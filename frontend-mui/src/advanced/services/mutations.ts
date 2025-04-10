@@ -3,7 +3,7 @@ import omit from 'lodash/omit';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Schema } from '../schema/schema';
+import { ZAdvancedUser } from '../schema/schema';
 import { mapData } from '../utils/mapData';
 import { BACKEND_URL } from './queries';
 
@@ -11,7 +11,7 @@ export function useCreateUser() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (data: Schema) => {
+		mutationFn: async (data: ZAdvancedUser) => {
 			await axios.post(
 				`${BACKEND_URL}/users`,
 				omit(mapData(data), 'variant')
